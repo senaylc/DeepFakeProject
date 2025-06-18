@@ -337,50 +337,11 @@ def main():
     It analyzes multiple frames and provides an average confidence score.
     """)
     
-    # Manual Upload Section
-    st.sidebar.header("📤 Manual Upload")
-    
-    # Model file upload
-    st.sidebar.markdown("**Upload Swin model (.pth)**")
-    model_file = st.sidebar.file_uploader(
-        "Drag and drop file here",
-        type=['pth'],
-        help="Limit 200MB per file • PTH",
-        key="model_upload"
-    )
-    
-    # Landmark predictor upload
-    st.sidebar.markdown("**Upload landmark predictor (.dat)**")
-    landmark_file = st.sidebar.file_uploader(
-        "Drag and drop file here",
-        type=['dat'],
-        help="Limit 200MB per file • DAT",
-        key="landmark_upload"
-    )
-    
-    # Handle manual uploads
-    model_path = None
-    landmark_path = None
-    
-    if model_file is not None:
-        # Save model file temporarily
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pth') as tmp_file:
-            tmp_file.write(model_file.read())
-            model_path = tmp_file.name
-        st.sidebar.success("✅ Model uploaded successfully!")
-    
-    if landmark_file is not None:
-        # Save landmark file temporarily
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.dat') as tmp_file:
-            tmp_file.write(landmark_file.read())
-            landmark_path = tmp_file.name
-        st.sidebar.success("✅ Landmark predictor uploaded successfully!")
-    
     # Load detector
-    detector = load_detector(model_path, landmark_path)
+    detector = load_detector()
     
     if detector is None:
-        st.error("❌ Failed to load the detection model. Please check model files or upload them manually.")
+        st.error("❌ Failed to load the detection model. Please check model files.")
         return
     
     # File upload section (directly after header, no extra panel)
@@ -558,10 +519,6 @@ def main():
                 # Clean up temporary files
                 if 'temp_video_path' in locals() and os.path.exists(temp_video_path):
                     os.unlink(temp_video_path)
-                if model_path and os.path.exists(model_path):
-                    os.unlink(model_path)
-                if landmark_path and os.path.exists(landmark_path):
-                    os.unlink(landmark_path)
     
     # Footer
     st.markdown("---")
